@@ -1,20 +1,26 @@
 var express = require('express');
-var app = express()
-var db = require('./database')
-
+var app = express();
+var db = require('./database');
+var bodyParser = require('body-parser');
 
 var port = 8080;
 
-app.listen(port,()=>{
-    console.log(`server runing on port ${port}`)
-})
+app.use(bodyParser.urlencoded({extended:false}))
 
 app.get('/',(req,res,next)=>{
-    res.json({"message":"oki doki"})
+    res.sendFile(__dirname + '/' + 'form.html')
 });
 
-app.get('/api/users',(req,res,next)=>{
-    var sql = 'SELECT * FROM users;'
+app.post('/',(req,res)=>{
+    db.run(`INSERT INTO todos(todo) VALUES(?)`,[req.body.todo],(err)=>{
+        if(err){res.status(400).json({'message':err.message})}
+        else{res.redirect('/api/todos')}
+    })
+    console.log(req.body.todo)
+})
+
+app.get('/api/todos',(req,res,next)=>{
+    var sql = 'SELECT * FROM todos;'
     var params = []
     db.all(sql,params,(err,rows)=>{
         if(err){
@@ -28,7 +34,8 @@ app.get('/api/users',(req,res,next)=>{
     })
 })
 
-app.use((req,res)=>{
-    res.status(404)
-}
-)
+
+
+app.listen(port,()=>{
+    console.log(`server runing on port ${port}`)
+})
