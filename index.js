@@ -34,7 +34,17 @@ app.get('/api/todos',(req,res,next)=>{
     })
 })
 
+// app.put (coming soon)
 
+app.delete('/api/todos/delete/:todoId',(req,res)=>{
+    db.run(`DELETE FROM todos WHERE Id = ?`,[req.params.todoId],(err)=>{
+        if(err){res.status(400).send(err.message)}
+        else{
+            res.redirect('/api/todos')
+            console.log('DELETE request completed')
+        }
+    })
+})
 
 app.listen(port,()=>{
     console.log(`server runing on port ${port}`)
