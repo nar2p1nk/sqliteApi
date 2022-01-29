@@ -34,9 +34,10 @@ app.get('/api/todos',(req,res,next)=>{
     })
 })
 
-// app.put (coming soon)
 
 app.delete('/api/todos/delete/:todoId',(req,res)=>{
+
+            req.method = 'GET';
     db.run(`DELETE FROM todos WHERE Id = ?`,[req.params.todoId],(err)=>{
         if(err){res.status(400).send(err.message)}
         else{
